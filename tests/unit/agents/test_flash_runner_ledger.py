@@ -176,6 +176,26 @@ def test_turn_limit_semantics(mock_context):
             assert FlashRunner(mock_context, goal="g").turn_limit is None
 
 
+def test_disabled_transcript_does_not_attach_history_chunker(mock_context):
+    from artemis.config import AgentGlobalConfig
+
+    config = AgentGlobalConfig.model_validate(
+        {
+            "flash": {"step_summarizer": {"enabled": False}},
+            "memory": {"transcript": {"enabled": False}},
+        }
+    )
+    mock_context.data_engine = Mock()
+
+    with (
+        patch("artemis.controllers.unified_controller.get_driver"),
+        patch("artemis.agents.flash.runner.load_agent_config", return_value=config),
+    ):
+        ledger = FlashRunner(mock_context, goal="g")._build_ledger()
+
+    assert ledger.chunker is None
+
+
 # ---------------------------------------------------------------------------
 # Observation tail: Pro shape with the session-relative header
 # ---------------------------------------------------------------------------

@@ -253,7 +253,7 @@ class FlashRunner:
             start_ratio=getattr(cfg, "start_ratio", None),
             session_start=session_start if isinstance(session_start, (int, float)) else None,
         )
-        if engine is not None:
+        if engine is not None and cfg.enabled:
             try:
                 from artemis.memory import HistoryChunkManager
 
